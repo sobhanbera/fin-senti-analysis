@@ -7,21 +7,40 @@ const Home: NextPage = () => {
     const [text, setText] = useState<string>('')
     const [result, setResult] = useState<number>(0)
     const [showResult, setShowResult] = useState<boolean>(false)
+    const [loading, setLoading] = useState<boolean>(false)
 
-    const textSentimentAnalysis = async e => {
+    const textSentimentAnalysis = async (e: any) => {
         e.preventDefault()
         if (text.length > 0) {
-            fetch('link', {})
+            setLoading(true)
+
+            const formData = new FormData()
+            formData.append('input', text)
+
+            fetch('http://10.80.200.162:8000/api', {
+                // input: text,
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                },
+            })
                 .then(res => res.json())
                 .then(res => {
-                    setResult(res.result)
+                    // getting the result of the prediction
+                    const parsedPrediction = JSON.parse(res)
+                    // parsing string to number
+                    const prediction = Number(parsedPrediction.prediction)
+
+                    // setting the state
+                    setResult(prediction)
                     setShowResult(true)
+                    setLoading(false)
                 })
                 .catch(err => {
-                    const a = [-1, 0, 1]
-                    setResult(a[Math.floor(Math.random() * a.length)])
-                    setShowResult(true)
+                    alert('Something went wrong')
                     console.error('ERROR', err)
+                    setLoading(false)
                 })
         } else {
             alert('Please enter some text')
@@ -48,9 +67,15 @@ const Home: NextPage = () => {
             <main className={styles.main}>
                 <h1 className={styles.title}>Welcome to Sentiment Analysis</h1>
 
-                <p className={styles.description}>
-                    Enter a sentence to analyze its sentiment
-                </p>
+                {!loading ? (
+                    <p className={styles.description}>
+                        Enter a sentence to analyze its sentiment
+                    </p>
+                ) : (
+                    <p className={styles.description}>
+                        <div className={styles.loader}></div>
+                    </p>
+                )}
 
                 <form
                     className={styles.form}
@@ -96,10 +121,10 @@ const Home: NextPage = () => {
                                     : styles.neutral
                             }`}>
                             {result > 0
-                                ? 'Positive'
+                                ? 'The sentence is Positive...'
                                 : result < 0
-                                ? 'Negative'
-                                : 'Neutral'}
+                                ? 'The sentence is Negative...'
+                                : 'The sentence is Neutral...'}
                         </p>
                     </div>
                 )}
