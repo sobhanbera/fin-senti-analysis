@@ -17,7 +17,7 @@ const Home: NextPage = () => {
             const formData = new FormData()
             formData.append('input', text)
 
-            fetch('http://10.80.200.162:8000/api', {
+            fetch('http://ip_address:8000/api', {
                 // input: text,
                 method: 'POST',
                 body: formData,

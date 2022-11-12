@@ -28,4 +28,4 @@ def api():
     return jsonify(response)
 
 if __name__ == "__main__":
-    app.run(debug=False, host="localhost", port=8000)
+    app.run(debug=False, host="ip_address_here", port=8000)
